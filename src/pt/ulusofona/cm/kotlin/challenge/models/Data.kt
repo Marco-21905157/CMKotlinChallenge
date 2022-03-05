@@ -1,17 +1,29 @@
 package pt.ulusofona.cm.kotlin.challenge.models
 
-class Data (val dia: Int, val mes: Int, val ano: Int) {
-    override fun toString(): String {
-        return "%02d".format(dia) + "-" + "%02d".format(mes) + "-" + "$ano"
-    }
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
+import java.util.*
 
-    fun diferencaAnos(data: Data) : Int {
-        var diferenca = ano - data.ano
+class Data {
+    companion object {
+        private fun converterData(data : Date) : LocalDate {
+            val cal = Calendar.getInstance()
+            cal.time = data
 
-        if (mes < data.mes || (mes == data.mes && dia < data.dia)) {
-            diferenca -= 1
+            return LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
         }
 
-        return diferenca
+        fun formatar(data : Date) : String {
+            val localdate = converterData(data)
+
+            return localdate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        }
+
+        fun diferencaAnosAtualidade(data : Date) : Int {
+            val localdate = converterData(data)
+
+            return Period.between(localdate, LocalDate.now()).years
+        }
     }
 }

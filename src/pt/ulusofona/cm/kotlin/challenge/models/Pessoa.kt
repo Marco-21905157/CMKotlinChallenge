@@ -5,14 +5,17 @@ import pt.ulusofona.cm.kotlin.challenge.exceptions.PessoaSemCartaException
 import pt.ulusofona.cm.kotlin.challenge.exceptions.VeiculoNaoEncontradoException
 import pt.ulusofona.cm.kotlin.challenge.interfaces.Movimentavel
 import java.time.LocalDate
+import java.time.Period
+import java.util.*
+import kotlin.collections.ArrayList
 
-class Pessoa (val nome: String, val dataDeNascimento: Data) : Movimentavel {
-    var veiculos: List<Veiculo> = ArrayList()
+class Pessoa (val nome: String, val dataDeNascimento: Date) : Movimentavel {
+    var veiculos: MutableList<Veiculo> = ArrayList()
     var carta: Carta? = null
     var posicao: Posicao? = null
 
     override fun toString(): String {
-        return "Pessoa | $nome | $dataDeNascimento | $posicao"
+        return "Pessoa | $nome | ${Data.formatar(dataDeNascimento)} | $posicao"
     }
 
     override fun moverPara(x: Int, y: Int) {
@@ -20,59 +23,39 @@ class Pessoa (val nome: String, val dataDeNascimento: Data) : Movimentavel {
     }
 
     fun comprarVeiculo(veiculo: Veiculo) {
-        // Criar copia da lista, mas como mutavel para podermos acrescentar o novo veiculo
-        val v : MutableList<Veiculo> = veiculos.toMutableList()
-        v.add(veiculo)
-
-        // Substituir a lista pela nova lista ja com o novo veiculo
-        veiculos = v
+        veiculos.add(veiculo)
     }
 
     fun pesquisarVeiculo(identificador: String) : Veiculo {
-        var v : Veiculo? = null
-
         for (veiculo in veiculos) {
             if (veiculo.identificador == identificador) {
-                v = veiculo
-                break
+                return veiculo
             }
         }
 
-        if (v == null) {
-            throw VeiculoNaoEncontradoException()
-        }
-
-        return v
+        throw VeiculoNaoEncontradoException()
     }
 
     fun venderVeiculo(identificador: String, comprador: Pessoa) {
         // Encontrar o veiculo
-        val veiculo : Veiculo? = pesquisarVeiculo(identificador)
+        val veiculo : Veiculo = pesquisarVeiculo(identificador)
 
-        // Se existir, vender
-        if (veiculo != null) {
-            // Remover veiculo
-            val v : MutableList<Veiculo> = veiculos.toMutableList()
-            v.remove(veiculo)
+        // Retirar o veiculo da lista
+        veiculos.remove(veiculo)
 
-            veiculos = v
-
-            // Comprador compra veiculo removido
-            comprador.comprarVeiculo(veiculo)
-        }
+        // Comprador compra veiculo removido
+        comprador.comprarVeiculo(veiculo)
     }
 
     fun moverVeiculoPara(identificador: String, x: Int, y: Int) {
         // Encontrar veiculo
-        val veiculo : Veiculo? = pesquisarVeiculo(identificador)
+        val veiculo : Veiculo = pesquisarVeiculo(identificador)
 
-        // Se existir, mover
-        if (veiculo != null) {
-            if (veiculo.requerCarta() && !temCarta()) {
-                throw PessoaSemCartaException(nome)
-            } else {
-                veiculo.moverPara(x, y) 
-            }
+        // Se requer carta e a pessoa nao tem, excecao
+        if (veiculo.requerCarta() && !temCarta()) {
+            throw PessoaSemCartaException(nome)
+        } else {
+            veiculo.moverPara(x, y)
         }
     }
 
@@ -81,10 +64,9 @@ class Pessoa (val nome: String, val dataDeNascimento: Data) : Movimentavel {
     }
 
     fun tirarCarta() {
-        val d = LocalDate.now()
-        val dataAtual = Data(d.dayOfMonth, d.monthValue, d.year)
+        val idade = Data.diferencaAnosAtualidade(dataDeNascimento)
 
-        if (dataAtual.diferencaAnos(dataDeNascimento) >= 18) {
+        if (idade >= 18) {
             carta = Carta()
         } else {
             throw MenorDeIdadeException()
