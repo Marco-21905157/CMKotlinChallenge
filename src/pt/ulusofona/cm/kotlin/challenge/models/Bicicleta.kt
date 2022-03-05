@@ -11,6 +11,6 @@ class Bicicleta(identificador: String) : Veiculo(identificador) {
     }
 
     override fun toString(): String {
-        return "Bicileta | ${super.toString()}"
+        return "Bicicleta | ${super.toString()}"
     }
 }
