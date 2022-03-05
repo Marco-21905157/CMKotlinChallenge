@@ -6,8 +6,8 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 abstract class Veiculo(val identificador: String) : Movimentavel {
-    var posicao: Posicao? = null
-    var dataDeAquisicao: Date? = null
+    var posicao: Posicao = Posicao()
+    var dataDeAquisicao: Date = Date()
 
     abstract fun requerCarta() : Boolean
 

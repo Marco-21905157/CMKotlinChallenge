@@ -13,7 +13,7 @@ import kotlin.collections.ArrayList
 class Pessoa (val nome: String, val dataDeNascimento: Date) : Movimentavel {
     var veiculos: MutableList<Veiculo> = ArrayList()
     var carta: Carta? = null
-    var posicao: Posicao? = null
+    var posicao: Posicao = Posicao()
 
     override fun toString(): String {
         val cal = Calendar.getInstance()
