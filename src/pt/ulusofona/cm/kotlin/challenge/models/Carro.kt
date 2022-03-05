@@ -6,21 +6,15 @@ import pt.ulusofona.cm.kotlin.challenge.interfaces.Ligavel
 
 class Carro(identificador: String, val motor: Motor) : Veiculo(identificador), Ligavel {
     override fun ligar() {
-        if (motor.ligado) {
-            throw VeiculoLigadoException()
-        }
-        motor.ligado = true
+        motor.ligar()
     }
 
     override fun desligar() {
-        if (!motor.ligado) {
-            throw VeiculoDesligadoException()
-        }
-        motor.ligado = false
+        motor.desligar()
     }
 
     override fun estaLigado(): Boolean {
-        return motor.ligado
+        return motor.estaLigado()
     }
 
     override fun requerCarta(): Boolean {
