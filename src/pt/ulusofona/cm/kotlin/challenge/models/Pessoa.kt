@@ -6,6 +6,7 @@ import pt.ulusofona.cm.kotlin.challenge.exceptions.VeiculoNaoEncontradoException
 import pt.ulusofona.cm.kotlin.challenge.interfaces.Movimentavel
 import java.time.LocalDate
 import java.time.Period
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -15,7 +16,12 @@ class Pessoa (val nome: String, val dataDeNascimento: Date) : Movimentavel {
     var posicao: Posicao? = null
 
     override fun toString(): String {
-        return "Pessoa | $nome | ${Data.formatar(dataDeNascimento)} | $posicao"
+        val cal = Calendar.getInstance()
+        cal.time = dataDeNascimento
+
+        val localDate = LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+
+        return "Pessoa | $nome | ${localDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))} | $posicao"
     }
 
     override fun moverPara(x: Int, y: Int) {
@@ -39,6 +45,9 @@ class Pessoa (val nome: String, val dataDeNascimento: Date) : Movimentavel {
     fun venderVeiculo(identificador: String, comprador: Pessoa) {
         // Encontrar o veiculo
         val veiculo : Veiculo = pesquisarVeiculo(identificador)
+
+        // Atualizar data de aquisicao
+        veiculo.dataDeAquisicao = Date()
 
         // Retirar o veiculo da lista
         veiculos.remove(veiculo)
@@ -64,7 +73,12 @@ class Pessoa (val nome: String, val dataDeNascimento: Date) : Movimentavel {
     }
 
     fun tirarCarta() {
-        val idade = Data.diferencaAnosAtualidade(dataDeNascimento)
+        val cal = Calendar.getInstance()
+        cal.time = dataDeNascimento
+
+        val localDate = LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+
+        val idade = Period.between(localDate, LocalDate.now()).years
 
         if (idade >= 18) {
             carta = Carta()
