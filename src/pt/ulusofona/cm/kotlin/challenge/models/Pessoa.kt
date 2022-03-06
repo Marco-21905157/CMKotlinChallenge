@@ -25,7 +25,7 @@ class Pessoa (val nome: String, val dataDeNascimento: Date) : Movimentavel {
     }
 
     override fun moverPara(x: Int, y: Int) {
-        posicao?.alterarPosicaoPara(x, y)
+        posicao.alterarPosicaoPara(x, y)
     }
 
     fun comprarVeiculo(veiculo: Veiculo) {
